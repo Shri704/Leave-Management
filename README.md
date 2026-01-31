@@ -77,9 +77,9 @@ A comprehensive full-stack leave management system with role-based access contro
    ```
    
    This creates:
-   - HOD: `hod@college.com` / `password123`
-   - Dean: `dean@college.com` / `password123`
-   - Principal: `principal@college.com` / `password123`
+   - HOD: `hod@college.com` / `hodc@#1234`
+   - Dean: `dean@college.com` / `deanc@#1234`
+   - Principal: `principal@college.com` / `principalc@#1234`
 
 5. **Start the backend server**
    ```bash
@@ -177,9 +177,9 @@ leave-management-system/
 ## 🔑 Default Credentials
 
 ### Authority Accounts (Created via API)
-- **HOD**: `hod@college.com` / `password123`
-- **Dean**: `dean@college.com` / `password123`
-- **Principal**: `principal@college.com` / `password123`
+- **HOD**: `hod@college.com` / `hodc@#1234`
+- **Dean**: `dean@college.com` / `deanc@#1234`
+- **Principal**: `principal@college.com` / `principalc@#1234`
 
 ### Teacher Accounts
 - Teachers must sign up through the Teacher Portal
