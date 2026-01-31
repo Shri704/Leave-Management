@@ -61,8 +61,13 @@ export default function Dashboard() {
   const handleApprove = async (id) => {
     setProcessing(id);
     try {
-      await approveLeave(id);
-      await fetchAllData();
+      const { data: updated } = await approveLeave(id);
+      const current = pendingLeaves.find((l) => l._id === id);
+      const merged = { ...updated, teacherId: current?.teacherId ?? updated.teacherId };
+      setPendingLeaves((prev) => prev.filter((l) => l._id !== id));
+      setProcessedLeaves((prev) => [merged, ...prev]);
+      // Refresh stats in background (non-blocking)
+      fetchAllData().catch(() => {});
     } catch (err) {
       alert(err.response?.data?.message || "Failed to approve leave");
     } finally {
@@ -76,8 +81,13 @@ export default function Dashboard() {
     }
     setProcessing(id);
     try {
-      await rejectLeave(id);
-      await fetchAllData();
+      const { data: updated } = await rejectLeave(id);
+      const current = pendingLeaves.find((l) => l._id === id);
+      const merged = { ...updated, teacherId: current?.teacherId ?? updated.teacherId };
+      setPendingLeaves((prev) => prev.filter((l) => l._id !== id));
+      setProcessedLeaves((prev) => [merged, ...prev]);
+      // Refresh stats in background (non-blocking)
+      fetchAllData().catch(() => {});
     } catch (err) {
       alert(err.response?.data?.message || "Failed to reject leave");
     } finally {

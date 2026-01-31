@@ -216,12 +216,15 @@ exports.approveLeave = async (req, res) => {
     }
 
     const teacher = await User.findById(leave.teacherId);
-    
+    let mailTo = null;
+    let mailSubject = null;
+    let mailHtml = null;
+
     if (req.user.role === "HOD") {
       leave.status = STATUS.PENDING_DEAN;
       const dean = await User.findOne({ role: "DEAN" });
       if (dean) {
-        const { subject, html } = generateLeaveEmail("NEW_REQUEST", {
+        const g = generateLeaveEmail("NEW_REQUEST", {
           teacherName: teacher.name,
           leaveType: leave.leaveType,
           fromDate: leave.fromDate,
@@ -229,14 +232,15 @@ exports.approveLeave = async (req, res) => {
           days: leave.finalDays,
           reason: leave.reason
         });
-        await sendMail(dean.email, subject, html);
+        mailTo = dean.email;
+        mailSubject = g.subject;
+        mailHtml = g.html;
       }
-    } 
-    else if (req.user.role === "DEAN") {
+    } else if (req.user.role === "DEAN") {
       leave.status = STATUS.PENDING_PRINCIPAL;
       const principal = await User.findOne({ role: "PRINCIPAL" });
       if (principal) {
-        const { subject, html } = generateLeaveEmail("NEW_REQUEST", {
+        const g = generateLeaveEmail("NEW_REQUEST", {
           teacherName: teacher.name,
           leaveType: leave.leaveType,
           fromDate: leave.fromDate,
@@ -244,12 +248,13 @@ exports.approveLeave = async (req, res) => {
           days: leave.finalDays,
           reason: leave.reason
         });
-        await sendMail(principal.email, subject, html);
+        mailTo = principal.email;
+        mailSubject = g.subject;
+        mailHtml = g.html;
       }
-    } 
-    else if (req.user.role === "PRINCIPAL") {
+    } else if (req.user.role === "PRINCIPAL") {
       leave.status = STATUS.APPROVED;
-      const { subject, html } = generateLeaveEmail("APPROVED", {
+      const g = generateLeaveEmail("APPROVED", {
         teacherName: teacher.name,
         leaveType: leave.leaveType,
         fromDate: leave.fromDate,
@@ -257,11 +262,20 @@ exports.approveLeave = async (req, res) => {
         days: leave.finalDays,
         reason: leave.reason
       });
-      await sendMail(teacher.email, subject, html);
+      mailTo = teacher.email;
+      mailSubject = g.subject;
+      mailHtml = g.html;
     }
 
     await leave.save();
     res.json(leave);
+
+    // Send email in background (don't block response)
+    if (mailTo && mailSubject && mailHtml) {
+      sendMail(mailTo, mailSubject, mailHtml).catch((err) =>
+        console.error("Approve mail error:", err.message)
+      );
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -276,8 +290,12 @@ exports.rejectLeave = async (req, res) => {
     }
 
     leave.status = STATUS.REJECTED;
-
     const teacher = await User.findById(leave.teacherId);
+
+    await leave.save();
+    res.json(leave);
+
+    // Send email in background (don't block response)
     if (teacher) {
       const { subject, html } = generateLeaveEmail("REJECTED", {
         teacherName: teacher.name,
@@ -287,11 +305,10 @@ exports.rejectLeave = async (req, res) => {
         days: leave.finalDays,
         reason: leave.reason
       });
-      await sendMail(teacher.email, subject, html);
+      sendMail(teacher.email, subject, html).catch((err) =>
+        console.error("Reject mail error:", err.message)
+      );
     }
-
-    await leave.save();
-    res.json(leave);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
