@@ -55,22 +55,28 @@ exports.applyLeave = async (req, res) => {
       finalDays
     });
 
+    res.status(201).json(leave);
+
+    // Notify HOD in background (don't block response – submit feels instant)
     const teacher = await User.findById(req.user.id);
     const hod = await User.findOne({ role: "HOD" });
-    
-    if (hod) {
-      const { subject, html } = generateLeaveEmail("NEW_REQUEST", {
-        teacherName: teacher.name,
-        leaveType,
-        fromDate,
-        toDate,
-        days: finalDays,
-        reason
-      });
-      await sendMail(hod.email, subject, html);
+    if (hod && teacher) {
+      try {
+        const { subject, html } = generateLeaveEmail("NEW_REQUEST", {
+          teacherName: teacher.name,
+          leaveType,
+          fromDate,
+          toDate,
+          days: finalDays,
+          reason
+        });
+        sendMail(hod.email, subject, html).catch((err) =>
+          console.error("Apply leave – HOD mail error:", err.message)
+        );
+      } catch (e) {
+        console.error("Apply leave – mail setup error:", e.message);
+      }
     }
-
-    res.status(201).json(leave);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -8,6 +8,10 @@ const transporter = require("../config/mailConfig");
  * @param {string} text - mail plain text content (fallback)
  */
 const sendMail = async (to, subject, html, text = "") => {
+  if (!process.env.EMAIL || !process.env.EMAIL_PASSWORD) {
+    console.warn("⚠️ Email not configured (EMAIL and EMAIL_PASSWORD). Skipping send to", to);
+    return;
+  }
   try {
     await transporter.sendMail({
       from: `"Leave Management System" <${process.env.EMAIL}>`,
@@ -16,11 +20,10 @@ const sendMail = async (to, subject, html, text = "") => {
       html,
       text: text || html.replace(/<[^>]*>/g, "")
     });
-
     console.log(`✅ Mail sent to ${to}`);
   } catch (error) {
     console.error("❌ Email sending failed:", error.message);
-    // Don't throw error - email failure shouldn't break the app
+    // Don't throw - email failure shouldn't break the app
   }
 };
 
