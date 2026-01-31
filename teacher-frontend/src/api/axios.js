@@ -1,18 +1,29 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
-// Request interceptor - Add token to headers
+// Request interceptor – Add token to headers
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     } else {
-      console.warn("No token found in localStorage for request:", config.url);
+      // Do NOT warn for public auth routes
+      if (
+        !config.url.includes("/auth/login") &&
+        !config.url.includes("/auth/signup")
+      ) {
+        console.warn(
+          "No token found in localStorage for request:",
+          config.url
+        );
+      }
     }
+
     return config;
   },
   (error) => {
@@ -20,23 +31,28 @@ instance.interceptors.request.use(
   }
 );
 
-// Response interceptor - Handle 401 errors
+// Response interceptor – Handle 401 errors
 instance.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
     if (error.response?.status === 401) {
-      // Token is invalid or expired - clear storage and redirect to home
+      // Clear auth data
       localStorage.removeItem("token");
       localStorage.removeItem("role");
       localStorage.removeItem("name");
-      
-      // Only redirect if we're not already on the home/login/signup page
-      if (window.location.pathname !== "/" && window.location.pathname !== "/login" && window.location.pathname !== "/signup") {
+
+      // Redirect only if not already on public pages
+      if (
+        window.location.pathname !== "/" &&
+        window.location.pathname !== "/login" &&
+        window.location.pathname !== "/signup"
+      ) {
         window.location.href = "/";
       }
     }
+
     return Promise.reject(error);
   }
 );
