@@ -1,9 +1,15 @@
 import axios from "axios";
 
-// Ensure base URL is the API root (e.g. https://xxx.onrender.com/api), not a full path like .../api/auth/login
-// Otherwise requests become .../api/auth/login + /auth/login → 404
-const rawUrl = import.meta.env.VITE_API_URL || "";
-const baseURL = rawUrl.replace(/\/auth\/login\/?$/, "") || rawUrl;
+// API base must be the root (e.g. https://xxx.onrender.com/api). Do NOT include /auth/login or paths.
+const rawUrl = (import.meta.env.VITE_API_URL || "").trim();
+const normalized = rawUrl.replace(/\/auth\/login\/?$/, "");
+// If no env set (e.g. production build without VITE_API_URL), use same origin + /api
+const baseURL =
+  normalized || (typeof window !== "undefined" ? `${window.location.origin}/api` : "");
+
+if (import.meta.env.DEV && !rawUrl) {
+  console.warn("VITE_API_URL not set – using same origin. For production, set VITE_API_URL to your backend (e.g. https://your-backend.onrender.com/api)");
+}
 
 const instance = axios.create({
   baseURL
