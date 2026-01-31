@@ -113,22 +113,23 @@ export default function Dashboard() {
   };
 
   const getStatusBadge = (status) => {
+    const base = "shrink-0 whitespace-nowrap px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-semibold";
     switch (status) {
       case "APPROVED":
         return (
-          <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+          <span className={`${base} bg-green-100 text-green-800`}>
             ✓ Approved
           </span>
         );
       case "REJECTED":
         return (
-          <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">
+          <span className={`${base} bg-red-100 text-red-800`}>
             ✗ Rejected
           </span>
         );
       default:
         return (
-          <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">
+          <span className={`${base} bg-yellow-100 text-yellow-800`}>
             {status.replace("_", " ")}
           </span>
         );
@@ -149,18 +150,18 @@ export default function Dashboard() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 + index * 0.05 }}
         whileHover={{ scale: 1.01 }}
-        className={`bg-white rounded-xl shadow-lg p-6 border-l-4 ${borderColor}`}
+        className={`bg-white rounded-xl shadow-lg p-4 sm:p-6 border-l-4 overflow-hidden ${borderColor}`}
       >
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 min-w-0">
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3 mb-3">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 ${
                   leave.status === "APPROVED" ? "bg-green-100" : 
                   leave.status === "REJECTED" ? "bg-red-100" : 
                   "bg-indigo-100"
                 }`}>
-                  <span className={`font-bold text-lg ${
+                  <span className={`font-bold text-base sm:text-lg ${
                     leave.status === "APPROVED" ? "text-green-600" : 
                     leave.status === "REJECTED" ? "text-red-600" : 
                     "text-indigo-600"
@@ -168,11 +169,11 @@ export default function Dashboard() {
                     {leave.teacherId?.name?.charAt(0) || "T"}
                   </span>
                 </div>
-                <div>
-                  <h3 className="font-bold text-gray-900 text-lg">
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-bold text-gray-900 text-base sm:text-lg truncate">
                     {leave.teacherId?.name || "Unknown Teacher"}
                   </h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs sm:text-sm text-gray-500 truncate">
                     {leave.teacherId?.email || "N/A"}
                   </p>
                 </div>
@@ -213,9 +214,9 @@ export default function Dashboard() {
             </div>
 
             {leave.reason && (
-              <div className="mt-4">
+              <div className="mt-4 min-w-0">
                 <p className="text-xs text-gray-500 mb-1">Reason</p>
-                <p className="text-gray-700 bg-gray-50 p-3 rounded-lg">
+                <p className="text-gray-700 bg-gray-50 p-3 rounded-lg break-words overflow-hidden">
                   {leave.reason}
                 </p>
               </div>
@@ -265,35 +266,35 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 overflow-x-hidden">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 w-full max-w-full overflow-x-hidden">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-4 sm:mb-8 min-w-0 overflow-hidden"
         >
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 truncate">
             {getRoleDisplay(user?.role)} Dashboard
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Review and manage leave requests
           </p>
         </motion.div>
 
-        {/* Tabs */}
+        {/* Tabs - full width on mobile, no overflow */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-6"
+          className="mb-6 w-full max-w-full overflow-hidden"
         >
-          <div className="bg-white rounded-xl shadow-lg p-1 inline-flex gap-2 flex-wrap">
+          <div className="bg-white rounded-xl shadow-lg p-1.5 sm:p-2 flex flex-wrap gap-2 w-full max-w-full">
             <button
               onClick={() => setActiveTab("pending")}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold transition-all text-sm sm:text-base whitespace-nowrap shrink-0 ${
                 activeTab === "pending"
                   ? "bg-indigo-600 text-white shadow-md"
                   : "text-gray-600 hover:text-gray-900"
@@ -303,7 +304,7 @@ export default function Dashboard() {
             </button>
             <button
               onClick={() => setActiveTab("processed")}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold transition-all text-sm sm:text-base whitespace-nowrap shrink-0 ${
                 activeTab === "processed"
                   ? "bg-indigo-600 text-white shadow-md"
                   : "text-gray-600 hover:text-gray-900"
@@ -313,7 +314,7 @@ export default function Dashboard() {
             </button>
             <button
               onClick={() => setActiveTab("statistics")}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold transition-all text-sm sm:text-base whitespace-nowrap shrink-0 ${
                 activeTab === "statistics"
                   ? "bg-indigo-600 text-white shadow-md"
                   : "text-gray-600 hover:text-gray-900"
