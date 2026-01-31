@@ -5,9 +5,6 @@ const dotenv = require("dotenv");
 // Load environment variables
 dotenv.config();
 
-// Database connection
-const connectDB = require("./config/db");
-
 // Routes
 const authRoutes = require("./routes/authRoutes");
 const leaveRoutes = require("./routes/leaveRoutes");
@@ -20,16 +17,7 @@ const errorMiddleware = require("./middleware/errorMiddleware");
 // Initialize app
 const app = express();
 
-// Connect to MongoDB and seed authority accounts (HOD, DEAN, PRINCIPAL)
-const adminController = require("./controllers/adminController");
-connectDB().then(async () => {
-  try {
-    await adminController.createAuthorities();
-    console.log("Authority accounts ready");
-  } catch (err) {
-    console.error("Authority seed error:", err.message);
-  }
-});
+// DB connection and authority seed are done in server.js before listen
 
 // Middlewares
 app.use(cors());

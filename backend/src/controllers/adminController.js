@@ -15,6 +15,7 @@ exports.createAuthorities = async () => {
       { name: auth.role, email: auth.email, password: hashedPassword, role: auth.role },
       { upsert: true, new: true }
     );
+    console.log(`Authority ${auth.role}: ${auth.email} ready`);
   }
 
   console.log("Authority accounts created/updated");
