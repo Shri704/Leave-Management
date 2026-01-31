@@ -221,7 +221,8 @@ To use Gmail SMTP:
 1. Connect your GitHub repository
 2. Set build command: `cd backend && npm install`
 3. Set start command: `cd backend && npm start`
-4. Add environment variables in Render dashboard
+4. Add environment variables in Render dashboard:
+   - `MONGO_URI`, `JWT_SECRET`, `EMAIL`, `EMAIL_PASSWORD` (Gmail App Password – required for mail to send)
 
 ### Frontend (Vercel)
 1. Deploy `teacher-frontend`:

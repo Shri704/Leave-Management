@@ -1,4 +1,4 @@
-const transporter = require("../config/mailConfig");
+const getTransporter = require("../config/mailConfig");
 
 /**
  * Send email notification with HTML template
@@ -8,8 +8,9 @@ const transporter = require("../config/mailConfig");
  * @param {string} text - mail plain text content (fallback)
  */
 const sendMail = async (to, subject, html, text = "") => {
-  if (!process.env.EMAIL || !process.env.EMAIL_PASSWORD) {
-    console.warn("⚠️ Email not configured (EMAIL and EMAIL_PASSWORD). Skipping send to", to);
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.warn("⚠️ Email not configured: set EMAIL and EMAIL_PASSWORD in .env (use Gmail App Password). Skipping send to", to);
     return;
   }
   try {
@@ -23,6 +24,12 @@ const sendMail = async (to, subject, html, text = "") => {
     console.log(`✅ Mail sent to ${to}`);
   } catch (error) {
     console.error("❌ Email sending failed:", error.message);
+    if (error.response) {
+      console.error("   SMTP response:", error.response);
+    }
+    if (error.code) {
+      console.error("   Code:", error.code);
+    }
     // Don't throw - email failure shouldn't break the app
   }
 };
