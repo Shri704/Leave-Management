@@ -1,7 +1,12 @@
 import axios from "axios";
 
+// Ensure base URL is the API root (e.g. https://xxx.onrender.com/api), not a full path like .../api/auth/login
+// Otherwise requests become .../api/auth/login + /auth/login → 404
+const rawUrl = import.meta.env.VITE_API_URL || "";
+const baseURL = rawUrl.replace(/\/auth\/login\/?$/, "") || rawUrl;
+
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL
+  baseURL
 });
 
 // Request interceptor - Add token to headers

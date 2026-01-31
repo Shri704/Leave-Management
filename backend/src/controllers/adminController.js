@@ -3,9 +3,9 @@ const bcrypt = require("bcryptjs");
 
 exports.createAuthorities = async () => {
   const authorities = [
-    { role: "HOD", email: "hod@college.com", password: "hodc@#1234" },
-    { role: "DEAN", email: "dean@college.com", password: "deanc@#1234" },
-    { role: "PRINCIPAL", email: "principal@college.com", password: "principalc@#1234" }
+    { role: "HOD", email: "hod.collegevdit@gmail.com", password: "hodc@#1234" },
+    { role: "DEAN", email: "dean.collegevdit@gmail.com", password: "deanc@#1234" },
+    { role: "PRINCIPAL", email: "principal.collegevdit@gmail.com", password: "principalc@#1234" }
   ];
 
   for (let auth of authorities) {
