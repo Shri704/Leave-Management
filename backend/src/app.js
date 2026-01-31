@@ -20,8 +20,16 @@ const errorMiddleware = require("./middleware/errorMiddleware");
 // Initialize app
 const app = express();
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB and seed authority accounts (HOD, DEAN, PRINCIPAL)
+const adminController = require("./controllers/adminController");
+connectDB().then(async () => {
+  try {
+    await adminController.createAuthorities();
+    console.log("Authority accounts ready");
+  } catch (err) {
+    console.error("Authority seed error:", err.message);
+  }
+});
 
 // Middlewares
 app.use(cors());

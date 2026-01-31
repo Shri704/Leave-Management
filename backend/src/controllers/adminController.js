@@ -9,16 +9,13 @@ exports.createAuthorities = async () => {
   ];
 
   for (let auth of authorities) {
-    const exists = await User.findOne({ role: auth.role });
-    if (!exists) {
-      await User.create({
-        name: auth.role,
-        email: auth.email,
-        password: await bcrypt.hash(auth.password, 10),
-        role: auth.role
-      });
-    }
+    const hashedPassword = await bcrypt.hash(auth.password, 10);
+    await User.findOneAndUpdate(
+      { role: auth.role },
+      { name: auth.role, email: auth.email, password: hashedPassword, role: auth.role },
+      { upsert: true, new: true }
+    );
   }
 
-  console.log("Authority accounts created");
+  console.log("Authority accounts created/updated");
 };
